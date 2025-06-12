@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天创作点啥？</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">今天创作点啥？</h1>
+            <p class="subtitle">AI为你推荐最热门的创作灵感</p>
+        </header>
+
+        <main class="cards-grid">
+            <!-- 第一个卡片：元宇宙办公新趋势 -->
+            <div class="card" data-card="1">
+                <div class="card-header">
+                    <h2 class="card-title">元宇宙办公新趋势</h2>
+                    <span class="card-tag tag-green">推荐</span>
+                </div>
+                <p class="card-description">
+                    随着远程工作常态化，虚拟现实技术在办公场景中的应用正在重新定义工作方式，为企业和员工带来全新的协作体验。
+                </p>
+                
+                <div class="rating-section">
+                    <h3 class="rating-title">角度评分</h3>
+                    <div class="radar-chart" id="radar1">
+                        <canvas id="canvas1" width="120" height="120"></canvas>
+                        <div class="radar-labels">
+                            <span class="label label-top">时效性 <span class="label-value">4</span></span>
+                            <span class="label label-top-right">重要性 <span class="label-value">5</span></span>
+                            <span class="label label-bottom-right">显著性 <span class="label-value">3</span></span>
+                            <span class="label label-bottom">趣味性 <span class="label-value">4</span></span>
+                            <span class="label label-bottom-left">贴近性 <span class="label-value">3</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sources-section">
+                    <h3 class="sources-title">灵感来源</h3>
+                    <ul class="sources-list">
+                        <li>Meta发布最新VR办公平台</li>
+                        <li>微软Teams集成混合现实功能</li>
+                        <li>远程工作趋势报告2024</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 第二个卡片：AI教育个性化 -->
+            <div class="card" data-card="2">
+                <div class="card-header">
+                    <h2 class="card-title">AI教育个性化</h2>
+                    <span class="card-tag tag-orange">热门</span>
+                </div>
+                <p class="card-description">
+                    人工智能正在教育领域掀起革命，通过个性化学习路径和智能辅导系统，为每个学生提供量身定制的教育体验。
+                </p>
+                
+                <div class="rating-section">
+                    <h3 class="rating-title">角度评分</h3>
+                    <div class="radar-chart" id="radar2">
+                        <canvas id="canvas2" width="120" height="120"></canvas>
+                        <div class="radar-labels">
+                            <span class="label label-top">时效性 <span class="label-value">5</span></span>
+                            <span class="label label-top-right">重要性 <span class="label-value">4</span></span>
+                            <span class="label label-bottom-right">显著性 <span class="label-value">4</span></span>
+                            <span class="label label-bottom">趣味性 <span class="label-value">5</span></span>
+                            <span class="label label-bottom-left">贴近性 <span class="label-value">4</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sources-section">
+                    <h3 class="sources-title">灵感来源</h3>
+                    <ul class="sources-list">
+                        <li>UX Pilot在教育中的应用案例</li>
+                        <li>AI个性化学习平台融资新闻</li>
+                        <li>教育部AI教育政策解读</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 第三个卡片：绿色能源突破 -->
+            <div class="card" data-card="3">
+                <div class="card-header">
+                    <h2 class="card-title">绿色能源突破</h2>
+                    <span class="card-tag tag-blue">趋势</span>
+                </div>
+                <p class="card-description">
+                    新一代太阳能和储能技术的突破性进展，正在加速全球能源转型，为应对气候变化提供更多可能性。
+                </p>
+                
+                <div class="rating-section">
+                    <h3 class="rating-title">角度评分</h3>
+                    <div class="radar-chart" id="radar3">
+                        <canvas id="canvas3" width="120" height="120"></canvas>
+                        <div class="radar-labels">
+                            <span class="label label-top">时效性 <span class="label-value">3</span></span>
+                            <span class="label label-top-right">重要性 <span class="label-value">5</span></span>
+                            <span class="label label-bottom-right">显著性 <span class="label-value">3</span></span>
+                            <span class="label label-bottom">趣味性 <span class="label-value">3</span></span>
+                            <span class="label label-bottom-left">贴近性 <span class="label-value">2</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sources-section">
+                    <h3 class="sources-title">灵感来源</h3>
+                    <ul class="sources-list">
+                        <li>钙钛矿太阳能电池效率新纪录</li>
+                        <li>海上风电技术重要长期报告</li>
+                        <li>绿色新政改革计划</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 第四个卡片：添加创作角度 -->
+            <div class="card add-card" data-card="4" id="addCard">
+                <div class="add-card-content" id="addCardContent">
+                    <div class="add-icon">+</div>
+                    <h2 class="add-title">添加你的创作角度</h2>
+                    <button class="start-create-btn" id="startCreateBtn">开始创作</button>
+                </div>
+
+                <!-- 展开后的内容 -->
+                <div class="expanded-content" id="expandedContent" style="display: none;">
+                    <div class="card-header">
+                        <input type="text" class="card-title-input" placeholder="输入你的创作主题..." id="titleInput">
+                    </div>
+                    <textarea class="card-description-input" placeholder="描述你的创作想法和角度..." id="descriptionInput"></textarea>
+                    
+                    <div class="rating-section">
+                        <h3 class="rating-title">角度评分</h3>
+                        <p class="rating-tip">直接在雷达图上拖拽调整各个维度的评分，数值越大表示该维度越强</p>
+                        <div class="radar-chart" id="radar4">
+                            <canvas id="canvas4" width="120" height="120"></canvas>
+                            <div class="radar-labels">
+                                <span class="label label-top">时效性 <span class="label-value" id="timelinessValue">3</span></span>
+                                <span class="label label-top-right">重要性 <span class="label-value" id="importanceValue">3</span></span>
+                                <span class="label label-bottom-right">显著性 <span class="label-value" id="significanceValue">3</span></span>
+                                <span class="label label-bottom">趣味性 <span class="label-value" id="interestValue">3</span></span>
+                                <span class="label label-bottom-left">贴近性 <span class="label-value" id="relevanceValue">3</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="save-btn" id="saveBtn" disabled>开始创作</button>
+                        <button class="cancel-btn" id="cancelBtn">取消</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
