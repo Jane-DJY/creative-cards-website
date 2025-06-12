@@ -18,6 +18,8 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
+    min-height: 100vh;
+    overflow-y: auto;
 }
 
 .header {
@@ -1228,8 +1230,8 @@ body {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -1247,17 +1249,20 @@ body {
     border-radius: 8px;
     margin-bottom: 15px;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    align-self: flex-start;
 }
 
 .outline-title {
-    font-size: 0.65rem; /* 再次缩小字体 */
+    font-size: 0.7rem;
     font-weight: 600;
     margin-bottom: 10px;
     color: white;
+    text-align: left;
+    width: 100%;
 }
 
 .outline-content-wrapper {
-    font-size: 0.5rem; /* 再次缩小字体 */
+    font-size: 0.55rem;
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.8);
     text-align: left;
@@ -1278,6 +1283,7 @@ body {
     transition: all 0.3s ease;
     margin-top: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    align-self: center;
 }
 
 .outline-confirm-button:hover {
@@ -1340,8 +1346,8 @@ body {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .chosen-outline-image {
@@ -1351,17 +1357,20 @@ body {
     border-radius: 12px;
     margin-bottom: 20px;
     border: 2px solid rgba(255, 255, 255, 0.4);
+    align-self: flex-start;
 }
 
 .chosen-outline-title {
-    font-size: 0.8rem; /* 再次缩小字体 */
+    font-size: 0.8rem;
     font-weight: 700;
     margin-bottom: 15px;
     color: white;
+    text-align: left;
+    width: 100%;
 }
 
 .chosen-outline-content-wrapper {
-    font-size: 0.6rem; /* 再次缩小字体 */
+    font-size: 0.6rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
     text-align: left;
@@ -1397,10 +1406,10 @@ body {
         height: 120px;
     }
     .chosen-outline-title {
-        font-size: 0.75rem; /* 再次缩小字体 */
+        font-size: 0.75rem;
     }
     .chosen-outline-content-wrapper {
-        font-size: 0.65rem; /* 再次缩小字体 */
+        font-size: 0.65rem;
     }
     .creative-controls {
         padding: 15px 0;
@@ -1424,20 +1433,20 @@ body {
         height: 100px;
     }
     .outline-title {
-        font-size: 0.55rem; /* 再次缩小字体 */
+        font-size: 0.55rem;
     }
     .outline-content-wrapper {
-        font-size: 0.4rem; /* 再次缩小字体 */
+        font-size: 0.4rem;
     }
     .chosen-outline-image {
         width: 100px;
         height: 100px;
     }
     .chosen-outline-title {
-        font-size: 0.65rem; /* 再次缩小字体 */
+        font-size: 0.65rem;
     }
     .chosen-outline-content-wrapper {
-        font-size: 0.5rem; /* 再次缩小字体 */
+        font-size: 0.5rem;
     }
     .creative-controls {
         padding: 10px 0;
@@ -1461,6 +1470,18 @@ body {
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
+/* 新增二级标题样式 */
+.document-section-subtitle {
+    font-size: 1.8rem; /* 字体大小 */
+    font-weight: 600; /* 加粗 */
+    margin-top: 30px; /* 上边距 */
+    margin-bottom: 15px; /* 下边距 */
+    color: rgba(255, 255, 255, 0.9); /* 颜色 */
+    text-align: center; /* 居中对齐 */
+    padding-bottom: 10px; /* 底部内边距 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* 底部边框 */
+}
+
 /* 大纲内容样式 - 新增或修改 */
 .outline-list {
     list-style: none;
@@ -1480,7 +1501,7 @@ body {
 }
 
 .outline-list > li > h4 {
-    font-size: 0.65rem; /* 再次缩小字体 */
+    font-size: 0.65rem;
     font-weight: 600;
     color: #a7f3d0;
     margin-bottom: 8px;
@@ -1517,7 +1538,7 @@ body {
 .outline-question {
     margin: 0;
     padding: 0;
-    font-size: 0.5rem; /* 再次缩小字体 */
+    font-size: 0.5rem;
     text-align: left;
     line-height: 1.4;
 }

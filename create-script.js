@@ -411,15 +411,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 提取大纲选择的处理逻辑到单独的函数
                 function handleOutlineSelection(selectedOutline, index) {
-                    // 清空大纲显示区域
-                    newOutlineDisplay.innerHTML = ''; 
+                    // 获取当前 outlineDisplay 的 HTML 内容，确保包含三个大纲
+                    const currentOutlineDisplayHTML = document.getElementById('outlineDisplay').innerHTML;
 
-                    // 重新构建 documentContent，只显示选中的大纲，保留其他内容
+                    // 重新构建 documentContent，在原有大纲下方追加选中的大纲
                     documentContent.innerHTML = `
                         <p class="document-angle">创作角度：<span id="userCreativeAngle">${localStorage.getItem('creativeAngle')}</span></p>
                         <h4 class="document-section-title" id="inspirationTitle">灵感</h4>
                         <div id="selectedOptionsDisplay">${currentSelectedOptionsHTML}</div>
                         <h4 class="document-section-title" id="outlineTitle">大纲</h4>
+                        <div id="outlineDisplay" class="outline-container">${currentOutlineDisplayHTML}</div>
+                        <h2 class="document-section-subtitle">被Hunk选中的大纲</h2>
                         <div class="chosen-outline-display">
                             <img src="${selectedOutline.image}" alt="${selectedOutline.title}" class="chosen-outline-image">
                             <h3 class="chosen-outline-title">${selectedOutline.title}</h3>
@@ -428,35 +430,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
 
                     // 发送新的机器人消息
-                    addBotMessage(`好的，Hunk！我们已经为你采纳了方案"${selectedOutline.title}"。现在，你可以点击"开始创作"按钮，进入下一步。`);
+                    addBotMessage(`好的，Hunk！我们已经为你采纳了方案"${selectedOutline.title}"。现在，我们进入创作的迭代环节。✨`);
 
-                    // 显示"开始创作"按钮
-                    const creativeControls = document.getElementById('creativeControls');
-                    creativeControls.style.display = 'flex';
-
-                    // 移除用户输入框和"完成！"按钮
+                    // 显示用户输入框，用于后续对话 (如果之前隐藏了)
                     const userInputContainer = document.querySelector('.user-input-container');
-                    userInputContainer.style.display = 'none'; // 隐藏整个输入框区域
+                    userInputContainer.style.display = 'flex';
 
-                    // 为"开始创作"按钮添加事件监听器
-                    const creativeButton = document.getElementById('creativeButton');
-                    creativeButton.addEventListener('click', () => {
-                        console.log('开始创作！');
-                        // 隐藏开始创作按钮
+                    // 隐藏"开始创作"按钮区域（如果存在）
+                    const creativeControls = document.getElementById('creativeControls');
+                    if (creativeControls) {
                         creativeControls.style.display = 'none';
-                        // 重新显示用户输入框，用于后续对话
-                        userInputContainer.style.display = 'flex';
-                        // 更新进度条到迭代环节
-                        document.querySelector('.progress-step:nth-child(3)').classList.remove('active'); // 大纲
-                        document.querySelector('.progress-step:nth-child(5)').classList.add('active'); // 迭代
+                    }
 
-                        // 延迟显示引导消息
-                        const iterationMessages = [
-                            '好的，Hunk！现在我们进入创作的迭代环节。✨',
-                            '我将根据你选择的大纲，为你生成更多详细的内容。'
-                        ];
-                        displayBotMessagesSequentially(iterationMessages);
-                    });
+                    // 更新进度条到迭代环节
+                    document.querySelector('.progress-step:nth-child(3)').classList.remove('active'); // 大纲
+                    document.querySelector('.progress-step:nth-child(5)').classList.add('active'); // 迭代
+
+                    // 延迟显示引导消息
+                    const iterationMessages = [
+                        '我将根据你选择的大纲，为你生成更多详细的内容。'
+                    ];
+                    displayBotMessagesSequentially(iterationMessages);
                 }
             });
         }
