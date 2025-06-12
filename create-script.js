@@ -1,5 +1,12 @@
 // create-script.js
 
+// 百炼大模型 API 配置
+const API_KEY = "sk-20684afc32be4ddc890a1fc5eea3faca";
+const BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1";
+
+// 对话消息历史
+let messages = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     const userCreativeAngleSpan = document.getElementById('userCreativeAngle');
     const janeCreativeAngleSpan = document.getElementById('janeCreativeAngle');
@@ -20,15 +27,19 @@ document.addEventListener('DOMContentLoaded', () => {
         contentType: false,
         length: false,
         audience: false,
-        angle: false,
         emotion: false,
-        coreQuestion: false
     };
     let confirmationMessageSent = false; // 标记确认消息是否已发送
 
     // 动态添加初始机器人消息
-    addBotMessage('你好！我是Jane，你的创作伙伴✨');
-    addBotMessage(`我看到你想探讨"${creativeAngle}"这个话题，这个角度很有意思！让我们一起深入挖掘，帮你打造一篇精彩的报道。<br><br>首先，这篇报道主要面向哪些读者呢？了解目标受众能帮助我们确定最合适的表达方式📝`);
+    const initialMessage1 = '你好！我是Jane，你的创作伙伴✨';
+    const initialMessage2 = `我看到你想探讨"${creativeAngle}"这个话题，这个角度很有意思！让我们一起深入挖掘，帮你打造一篇精彩的报道。<br><br>首先，这篇报道主要面向哪些读者呢？了解目标受众能帮助我们确定最合适的表达方式📝`;
+    
+    addBotMessage(initialMessage1); // 仅添加到 UI
+    messages.push({ role: "assistant", content: initialMessage1.replace(/<br>/g, '\n') }); // 添加到消息历史（纯文本）
+
+    addBotMessage(initialMessage2); // 仅添加到 UI
+    messages.push({ role: "assistant", content: initialMessage2.replace(/<br>/g, '\n') }); // 添加到消息历史（纯文本）
 
     // 动态添加问题块
     const questionBlockHTML = `
@@ -71,19 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>
         <div class="question-group">
-            <h4>4. 从哪个角度切入？</h4>
-            <div class="options-container">
-                <label><input type="radio" name="angle" value="人物驱动"> 人物驱动</label>
-                <label><input type="radio" name="angle" value="数据分析"> 数据分析</label>
-                <label><input type="radio" name="angle" value="历史溯源"> 历史溯源</label>
-                <label class="other-option">
-                    <input type="radio" name="angle" value="其他">
-                    其他：<input type="text" class="other-input" data-target="angle-other" placeholder="请填写">
-                </label>
-            </div>
-        </div>
-        <div class="question-group">
-            <h4>5. 报道想传递什么情绪？</h4>
+            <h4>4. 报道想传递什么情绪？</h4>
             <div class="options-container">
                 <label><input type="radio" name="emotion" value="反思"> 反思</label>
                 <label><input type="radio" name="emotion" value="温情"> 温情</label>
@@ -94,18 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <label class="other-option">
                     <input type="radio" name="emotion" value="其他">
                     其他：<input type="text" class="other-input" data-target="emotion-other" placeholder="请填写">
-                </label>
-            </div>
-        </div>
-        <div class="question-group">
-            <h4>6. 报道核心问题？</h4>
-            <div class="options-container">
-                <label><input type="radio" name="coreQuestion" value="泡泡玛特现状如何？"> 泡泡玛特现状如何？</label>
-                <label><input type="radio" name="coreQuestion" value="泡泡玛特面临哪些挑战？"> 泡泡玛特面临哪些挑战？</label>
-                <label><input type="radio" name="coreQuestion" value="泡泡玛特的市场价值与发展潜力？"> 泡泡玛特的市场价值与发展潜力？</label>
-                <label class="other-option">
-                    <input type="radio" name="coreQuestion" value="其他">
-                    其他：<input type="text" class="other-input" data-target="coreQuestion-other" placeholder="请填写">
                 </label>
             </div>
         </div>
@@ -162,9 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'contentType': '1. 内容形态：',
             'length': '2. 长度：',
             'audience': '3. 面向对象：',
-            'angle': '4. 切入角度：',
-            'emotion': '5. 传递情绪：',
-            'coreQuestion': '6. 核心问题：'
+            'emotion': '4. 传递情绪：',
         };
 
         let displayHtml = `<h4>${questionMap[questionGroup]}</h4><p>${selectedValue}</p>`;
@@ -191,9 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 questionGroup === 'contentType' ? 1 :
                 questionGroup === 'length' ? 2 :
                 questionGroup === 'audience' ? 3 :
-                questionGroup === 'angle' ? 4 :
-                questionGroup === 'emotion' ? 5 :
-                questionGroup === 'coreQuestion' ? 6 : 0 // 默认为 0 以防万一
+                questionGroup === 'emotion' ? 4 :
+                0 // 默认为 0 以防万一
             );
             
             // 找到应该插入的位置
@@ -206,9 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     divGroup === 'contentType' ? 1 :
                     divGroup === 'length' ? 2 :
                     divGroup === 'audience' ? 3 :
-                    divGroup === 'angle' ? 4 :
-                    divGroup === 'emotion' ? 5 :
-                    divGroup === 'coreQuestion' ? 6 : 0
+                    divGroup === 'emotion' ? 4 :
+                    0
                 );
                 
                 if (currentOrder < divOrder) {
@@ -222,6 +205,17 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 selectedOptionsDisplay.appendChild(newDiv);
             }
+        }
+
+        // 动态添加"灵感"标题，如果它不存在的话
+        const documentContent = document.querySelector('.document-content');
+        let inspirationTitleElement = documentContent.querySelector('#inspirationTitle');
+        if (!inspirationTitleElement) {
+            inspirationTitleElement = document.createElement('h4');
+            inspirationTitleElement.className = 'document-section-title';
+            inspirationTitleElement.id = 'inspirationTitle';
+            inspirationTitleElement.textContent = '灵感';
+            documentContent.insertBefore(inspirationTitleElement, selectedOptionsDisplay); // 插入在 selectedOptionsDisplay 之前
         }
 
         // 检查所有问题是否都已回答
@@ -242,27 +236,119 @@ document.addEventListener('DOMContentLoaded', () => {
                 const audio = new Audio('Music/Music1.mp3');
                 audio.play();
                 
-                // 清空聊天区域的旧消息和问题
-                chatMessages.innerHTML = '';
-                selectedOptionsDisplay.innerHTML = '';
+                // chatMessages.innerHTML = ''; // 移除这行，保留聊天历史
+                // selectedOptionsDisplay.innerHTML = ''; // 移除这行，保留已选答案
+
+                // 更新进度条状态
+                document.querySelector('.progress-step:nth-child(1)').classList.remove('active'); // 灵感
+                document.querySelector('.progress-step:nth-child(3)').classList.add('active'); // 大纲
 
                 // 动态生成三个大纲
-                const outlineDisplay = document.getElementById('outlineDisplay');
                 const outlines = [
                     {
-                        image: 'Images/Outline1.png',
-                        title: '大纲方案一：深度剖析',
-                        content: '大纲框架：<br>1. 泡泡玛特现状与市场地位：当前市场表现，行业影响力。<br>2. 挑战与机遇并存：面临的竞争、消费者喜好变化，以及新的增长点。<br>3. 未来发展潜力：IP合作、国际市场拓展、数字化转型等。'
+                        image: 'Images/Structure1.jpg',
+                        title: '把"情绪连接"纳入未来现金流预测——情绪牌能否带来品牌溢价和定价权？',
+                        content: `
+                            <ul class="outline-list">
+                                <li>
+                                    <h4>引子（Exposition）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">中国消费市场中的"情绪需求"开始崛起，年轻人为何为"空虚寂寞冷"买单？<br>泡泡玛特作为情绪载体的角色被确立。</p></li>
+                                        <li><p class="outline-question">核心问题：情绪消费的风口出现了，泡泡玛特在其中扮演了怎样的先驱角色？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>上升动作（Rising Action）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">泡泡玛特从盲盒生意升级为"情绪IP制造商"。联名、展会、AI角色持续强化用户共鸣。<br>打造了Molly等情绪共鸣IP。</p></li>
+                                        <li><p class="outline-question">核心问题：泡泡玛特的"情感牌"是如何一步步打动Z世代的？它的增长逻辑是什么？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>高潮（Climax）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">二级市场估值飙升、媒体热捧、年轻人集体"为情绪氪金"。<br>情绪连接转化为投资热情，资本市场给予高估值。</p></li>
+                                        <li><p class="outline-question">核心问题：泡泡玛特的情绪价值，能转化为怎样的商业价值？估值是否合理？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>下降动作（Falling Action）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">疲劳袭来：产品同质化、审美倦怠、用户流失、财务增速放缓。<br>情感IP更新周期成为最大挑战。</p></li>
+                                        <li><p class="outline-question">核心问题："情感牌"还能打多久？当潮水退去，估值将回归哪里？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>结局（Denouement）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">企业转型——从"IP+零售"向"情绪共创平台"升级。是否能像迪士尼那样持续构建"情绪帝国"？</p></li>
+                                        <li><p class="outline-question">核心问题：情感牌是否具备长期壁垒，泡泡玛特的估值能否真正撑起"情绪消费第一股"？</p></li>
+                                    </ul>
+                                </li>
+                            </ul>`
                     },
                     {
-                        image: 'Images/Outline2.png',
-                        title: '大纲方案二：情感共鸣',
-                        content: '大纲框架：<br>1. 情感连接：用户与泡泡玛特盲盒的情感羁绊，收藏背后的故事。<br>2. 社交属性：盲盒如何成为年轻人社交的媒介，社群文化。<br>3. 品牌温度：泡泡玛特在用户心中的形象，文化符号。'
+                        image: 'Images/Structure2.jpg',
+                        title: '用于拆解泡泡玛特如何"唤起情感"，激发消费 → 转化为估值的增长',
+                        content: `
+                            <ul class="outline-list">
+                                <li>
+                                    <h4>Attention 关注</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">泡泡玛特用盲盒、"开箱"机制打造情绪波动体验，引爆社交平台<br>引发大众注意：是什么让成年人为"娃娃"疯狂？</p></li>
+                                        <li><p class="outline-question">关键提问：泡泡玛特为何能获得如此高的社交声量？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>Interest 兴趣</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">角色背后故事、品牌联名、孤独感应对。<br>AI人物设定、人格投射，增强"情绪共鸣"。</p></li>
+                                        <li><p class="outline-question">关键提问：消费者被什么打动？这些IP如何切中现代孤独情绪？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>Desire 渴望</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">限量发售、收藏增值、情绪寄托，"我不是买产品，我是找寄托"。<br>IP成为情绪投资品。</p></li>
+                                        <li><p class="outline-question">关键提问：泡泡玛特是否正在成为"情绪奢侈品"？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>Action 行动</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">消费决策、社群参与、品牌忠诚，估值提升背后的真实购买与沉淀。<br>资本持续下注。</p></li>
+                                        <li><p class="outline-question">关键提问：用户真金白银地投入，这种模式是否可持续？</p></li>
+                                    </ul>
+                                </li>
+                            </ul>`
                     },
                     {
-                        image: 'Images/Outline3.png',
-                        title: '大纲方案三：商业模式创新',
-                        content: '大纲框架：<br>1. 盲盒经济解析：独特的销售模式，消费心理洞察。<br>2. IP孵化与运营：如何打造爆款IP，IP生态圈的构建。<br>3. 线上线下融合：新零售模式探索，全渠道布局。'
+                        image: 'Images/Structure3.jpg',
+                        title: '以泡泡玛特为"主角"，讲述其如何踏上情绪消费之旅、陷入瓶颈、再探索出路。',
+                        content: `
+                            <ul class="outline-list">
+                                <li>
+                                    <h4>第一幕（设定）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">泡泡玛特从潮玩公司转型为"情绪捕手"<br>介绍中国年轻人精神孤岛背景与盲盒文化崛起</p></li>
+                                        <li><p class="outline-question">报道重点问题："孤独经济"催生泡泡玛特式的文化现象？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>第二幕（冲突）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">情绪共鸣带来爆发式估值，但用户疲劳、审美重复、创作瓶颈陆续出现<br>资本与用户双向质疑开始</p></li>
+                                        <li><p class="outline-question">报道重点问题：泡泡玛特还能讲出新的"情绪故事"吗？</p></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h4>第三幕（转变）</h4>
+                                    <ul class="nested-list">
+                                        <li><p class="outline-description">开始探索"用户共创"、IP人格AI化、国际化扩展、数字藏品化路径以重启增长曲线<br>新估值逻辑出现</p></li>
+                                        <li><p class="outline-question">报道重点问题：泡泡玛特能否转型为"东方的迪士尼"？估值模型是否合理？</p></li>
+                                    </ul>
+                                </li>
+                            </ul>`
                     }
                 ];
 
@@ -273,52 +359,105 @@ document.addEventListener('DOMContentLoaded', () => {
                             <img src="${outline.image}" alt="${outline.title}" class="outline-image">
                             <h3 class="outline-title">${outline.title}</h3>
                             <p class="outline-content-text">${outline.content}</p>
+                            <button class="outline-confirm-button" data-outline-index="${index}">选择此大纲</button>
                         </div>
                     `;
                 });
-                outlineDisplay.innerHTML = outlinesHTML;
+
+                // 在文档区域显示选定大纲的详细内容
+                const documentContent = document.querySelector('.document-content');
+                const userCreativeAngleElement = document.getElementById('userCreativeAngle');
+                const selectedOptionsDisplayElement = document.getElementById('selectedOptionsDisplay');
+
+                // 确保获取到 selectedOptionsDisplay 的当前 HTML 内容，因为它可能会被重新渲染
+                const currentSelectedOptionsHTML = selectedOptionsDisplayElement.innerHTML;
+
+                // 重新构建 documentContent，包含所有部分
+                documentContent.innerHTML = `
+                    <p class="document-angle">创作角度：<span id="userCreativeAngle">${localStorage.getItem('creativeAngle')}</span></p>
+                    <h4 class="document-section-title" id="inspirationTitle">灵感</h4>
+                    <div id="selectedOptionsDisplay">${currentSelectedOptionsHTML}</div>
+                    <h4 class="document-section-title" id="outlineTitle">大纲</h4>
+                    <div id="outlineDisplay" class="outline-container">${outlinesHTML}</div>
+                `;
+
+                // 重新获取 outlineDisplay 元素，因为它已被重新创建
+                const newOutlineDisplay = document.getElementById('outlineDisplay');
 
                 // 发送新的机器人消息
                 addBotMessage('很好！这是我们为你准备的三个大纲初稿，请选择一个你最喜欢的大纲，或者告诉我们你的修改意见✨');
 
                 // 为每个大纲项添加点击事件监听器
-                document.querySelectorAll('.outline-item').forEach(item => {
+                newOutlineDisplay.querySelectorAll('.outline-item').forEach(item => {
                     item.addEventListener('click', (e) => {
-                        const index = e.currentTarget.dataset.outlineIndex;
-                        const selectedOutline = outlines[index];
-
-                        // 清空已选选项显示区域和大纲显示区域
-                        selectedOptionsDisplay.innerHTML = '';
-                        outlineDisplay.innerHTML = '';
-
-                        // 在文档区域显示选定大纲的详细内容
-                        const documentContent = document.querySelector('.document-content');
-                        documentContent.innerHTML = `
-                            <div class="chosen-outline-display">
-                                <img src="${selectedOutline.image}" alt="${selectedOutline.title}" class="chosen-outline-image">
-                                <h3 class="chosen-outline-title">${selectedOutline.title}</h3>
-                                <p class="chosen-outline-content-text">${selectedOutline.content}</p>
-                            </div>
-                        `;
-
-                        // 发送新的机器人消息
-                        addBotMessage(`好的，Hunk！我们已经为你采纳了方案"${selectedOutline.title}"。现在，你可以开始你的创作了。完成后请点击"完成！"按钮✨`);
-
-                        // 隐藏用户输入框并显示"完成！"按钮
-                        const userInputContainer = document.querySelector('.user-input-container');
-                        userInputContainer.innerHTML = `
-                            <div class="complete-button-container">
-                                <button id="completeCreativeButton" class="send-button" style="border-radius: 8px; width: auto; padding: 8px 15px; margin-top: 0; background: rgba(34, 197, 94, 0.8);">完成！</button>
-                            </div>
-                        `;
-
-                        // 为"完成！"按钮添加事件监听器
-                        document.getElementById('completeCreativeButton').addEventListener('click', () => {
-                            console.log('创作完成！');
-                            // TODO: 在此处添加创作完成后的逻辑
-                        });
+                        // 如果点击的是确认按钮，则阻止事件冒泡
+                        if (e.target.classList.contains('outline-confirm-button')) {
+                            e.stopPropagation();
+                            const index = e.target.dataset.outlineIndex;
+                            const selectedOutline = outlines[index];
+                            handleOutlineSelection(selectedOutline, index);
+                        }
                     });
                 });
+
+                // 为确认按钮添加事件监听器
+                newOutlineDisplay.querySelectorAll('.outline-confirm-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.outlineIndex;
+                        const selectedOutline = outlines[index];
+                        handleOutlineSelection(selectedOutline, index);
+                    });
+                });
+
+                // 提取大纲选择的处理逻辑到单独的函数
+                function handleOutlineSelection(selectedOutline, index) {
+                    // 清空大纲显示区域
+                    newOutlineDisplay.innerHTML = ''; 
+
+                    // 重新构建 documentContent，只显示选中的大纲，保留其他内容
+                    documentContent.innerHTML = `
+                        <p class="document-angle">创作角度：<span id="userCreativeAngle">${localStorage.getItem('creativeAngle')}</span></p>
+                        <h4 class="document-section-title" id="inspirationTitle">灵感</h4>
+                        <div id="selectedOptionsDisplay">${currentSelectedOptionsHTML}</div>
+                        <h4 class="document-section-title" id="outlineTitle">大纲</h4>
+                        <div class="chosen-outline-display">
+                            <img src="${selectedOutline.image}" alt="${selectedOutline.title}" class="chosen-outline-image">
+                            <h3 class="chosen-outline-title">${selectedOutline.title}</h3>
+                            <div class="chosen-outline-content-wrapper">${selectedOutline.content}</div>
+                        </div>
+                    `;
+
+                    // 发送新的机器人消息
+                    addBotMessage(`好的，Hunk！我们已经为你采纳了方案"${selectedOutline.title}"。现在，你可以点击"开始创作"按钮，进入下一步。`);
+
+                    // 显示"开始创作"按钮
+                    const creativeControls = document.getElementById('creativeControls');
+                    creativeControls.style.display = 'flex';
+
+                    // 移除用户输入框和"完成！"按钮
+                    const userInputContainer = document.querySelector('.user-input-container');
+                    userInputContainer.style.display = 'none'; // 隐藏整个输入框区域
+
+                    // 为"开始创作"按钮添加事件监听器
+                    const creativeButton = document.getElementById('creativeButton');
+                    creativeButton.addEventListener('click', () => {
+                        console.log('开始创作！');
+                        // 隐藏开始创作按钮
+                        creativeControls.style.display = 'none';
+                        // 重新显示用户输入框，用于后续对话
+                        userInputContainer.style.display = 'flex';
+                        // 更新进度条到迭代环节
+                        document.querySelector('.progress-step:nth-child(3)').classList.remove('active'); // 大纲
+                        document.querySelector('.progress-step:nth-child(5)').classList.add('active'); // 迭代
+
+                        // 延迟显示引导消息
+                        const iterationMessages = [
+                            '好的，Hunk！现在我们进入创作的迭代环节。✨',
+                            '我将根据你选择的大纲，为你生成更多详细的内容。'
+                        ];
+                        displayBotMessagesSequentially(iterationMessages);
+                    });
+                }
             });
         }
     }
@@ -327,6 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const documentSection = document.querySelector('.document-section');
     const chatSection = document.querySelector('.chat-section');
     const resizer = document.getElementById('resizer');
+    const creativeControls = document.getElementById('creativeControls'); // 获取创作控制区
+    const creativeButton = document.getElementById('creativeButton');     // 获取开始创作按钮
 
     let isResizing = false;
 
@@ -390,42 +531,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 添加机器人消息功能
-function addBotMessage(message, isQuestionBlock = false) {
+// 辅助函数：按顺序显示多条机器人消息
+async function displayBotMessagesSequentially(messagesArray) {
     const chatMessages = document.querySelector('.chat-messages');
-    const botMessage = document.createElement('div');
-    botMessage.className = 'chat-bubble bot-message';
-    if (isQuestionBlock) {
-        botMessage.classList.add('question-block');
+    for (let i = 0; i < messagesArray.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 500)); // 间隔 0.5 秒
+        addBotMessage(messagesArray[i]);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // 每次添加后滚动到底部
     }
-    
-    botMessage.innerHTML = `<p>${message}</p>`;
-    chatMessages.appendChild(botMessage);
-    
-    // 滚动到底部
-    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// 发送消息功能
-function sendMessage() {
+// 发送消息功能 (将替换原有逻辑)
+async function sendMessage() {
     const input = document.querySelector('.user-input');
-    const message = input.value.trim();
-    
-    if (message) {
-        // 添加用户消息到聊天框
-        const chatMessages = document.querySelector('.chat-messages');
-        const userMessage = document.createElement('div');
-        userMessage.className = 'chat-bubble user-message';
-        userMessage.textContent = message;
-        chatMessages.appendChild(userMessage);
-        
-        // 清空输入框
-        input.value = '';
-        
-        // 滚动到底部
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // TODO: 这里可以添加与后端的通信逻辑
+    const userInput = input.value.trim();
+    input.value = ''; // 立即清空输入框
+
+    if (!userInput) return;
+
+    // 添加用户消息到聊天框和消息历史
+    addBotMessage(userInput, false, 'user'); // 使用 addBotMessage 来添加用户消息
+    messages.push({ role: "user", content: userInput });
+
+    // 添加思考提示
+    const thinkingMessageDiv = document.createElement('div');
+    thinkingMessageDiv.className = 'chat-bubble bot-message';
+    thinkingMessageDiv.innerHTML = '<p>Jane 正在思考...</p>';
+    chatMessages.appendChild(thinkingMessageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+        const response = await fetch(`${BASE_URL}/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "deepseek-r1",
+                messages: messages
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorData.message || 'Unknown error'}`);
+        }
+
+        const data = await response.json();
+        // 根据实际API响应结构调整
+        const aiResponse = data.choices[0].message.content; 
+
+        // 移除思考提示
+        chatMessages.removeChild(thinkingMessageDiv);
+
+        // 添加 AI 消息到聊天框和消息历史
+        addBotMessage(aiResponse, false, 'bot'); // 使用 addBotMessage 来添加机器人消息
+        messages.push({ role: "assistant", content: aiResponse });
+
+    } catch (error) {
+        console.error('发生错误：', error);
+        // 移除思考提示
+        if (chatMessages.contains(thinkingMessageDiv)) {
+            chatMessages.removeChild(thinkingMessageDiv);
+        }
+        addBotMessage('抱歉，与模型通信时发生错误。请稍后再试。', false, 'bot');
     }
 }
 
@@ -444,4 +614,26 @@ document.querySelector('.user-input').addEventListener('keydown', (e) => {
 document.querySelector('.user-input').addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = (this.scrollHeight) + 'px';
-}); 
+});
+
+// 添加机器人消息功能 (修改 addBotMessage 以支持角色)
+function addBotMessage(message, isQuestionBlock = false, role = 'bot') {
+    const chatMessages = document.querySelector('.chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-bubble ${role}-message`;
+    if (isQuestionBlock) {
+        messageDiv.classList.add('question-block');
+    }
+    
+    // 确保消息内容是纯文本，如果包含 HTML 标签，应该用 innerHTML
+    if (role === 'user' || !isQuestionBlock) {
+        messageDiv.innerHTML = `<p>${message}</p>`;
+    } else {
+        messageDiv.innerHTML = message; // questionBlockHTML 已经是完整的 HTML 结构
+    }
+    
+    chatMessages.appendChild(messageDiv);
+    
+    // 滚动到底部
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+} 
