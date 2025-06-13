@@ -42,7 +42,7 @@ body {
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
@@ -321,12 +321,9 @@ body {
 
 /* 添加卡片特殊样式 */
 .add-card {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    min-height: 250px;
-    transition: all 0.3s ease;
+    max-width: 800px;
+    margin: 0 auto 40px;
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .add-card-content {
@@ -480,6 +477,10 @@ body {
     
     .card-tag {
         align-self: flex-start;
+    }
+    
+    .add-card {
+        margin-bottom: 30px;
     }
 }
 
@@ -635,11 +636,9 @@ body {
 }
 
 .document-content h4 {
-    font-size: 1rem;
     font-weight: 600;
     margin-top: 15px;
     margin-bottom: 5px;
-    color: rgba(255, 255, 255, 0.8);
 }
 
 .document-content p {
@@ -867,6 +866,9 @@ body {
     }
     .chat-bubble {
         max-width: 90%;
+    }
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -1458,28 +1460,22 @@ body {
 }
 
 /* Styles for document content titles */
-.document-section-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-top: 35px;
+.document-content h4.document-section-title {
+    font-size: 1.8rem !important;
+    font-weight: 600;
     margin-bottom: 20px;
-    color: white;
-    text-align: center;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-    padding-bottom: 15px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+    color: #a7f3d0 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* 新增二级标题样式 */
 .document-section-subtitle {
-    font-size: 1.8rem; /* 字体大小 */
-    font-weight: 600; /* 加粗 */
-    margin-top: 30px; /* 上边距 */
-    margin-bottom: 15px; /* 下边距 */
-    color: rgba(255, 255, 255, 0.9); /* 颜色 */
-    text-align: center; /* 居中对齐 */
-    padding-bottom: 10px; /* 底部内边距 */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* 底部边框 */
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    color: #a7f3d0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* 大纲内容样式 - 新增或修改 */
@@ -1494,6 +1490,7 @@ body {
 .outline-list > li {
     margin-bottom: 10px; /* 减小间距 */
     padding-left: 0;
+    cursor: grab;
 }
 
 .outline-list > li:last-child {
@@ -1547,4 +1544,169 @@ body {
     font-style: italic;
     color: rgba(255, 255, 255, 0.6);
     margin-top: 5px;
+}
+
+/* Sortable.js styles */
+.sortable-ghost {
+    opacity: 0.2;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+.sortable-chosen {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sortable-drag {
+    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* 优化选项样式 */
+.optimization-options {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.optimization-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #a7f3d0;
+    margin-bottom: 16px;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.optimization-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    padding: 8px 0;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.optimization-option:hover {
+    background: rgba(34,197,94,0.08);
+}
+
+.custom-input-container {
+    margin-top: 8px;
+    width: 100%;
+}
+
+.custom-optimization-input {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #a7f3d0;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    font-size: 1rem;
+    margin-top: 4px;
+}
+
+.confirm-optimization-btn {
+    margin-top: 18px;
+    background: linear-gradient(90deg, #6a5acd, #4b3e8e);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+}
+
+.confirm-optimization-btn:hover {
+    background: linear-gradient(90deg, #4b3e8e, #6a5acd);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+    .optimization-options {
+        padding: 12px 6px;
+    }
+    .optimization-title {
+        font-size: 1rem;
+    }
+    .custom-optimization-input {
+        font-size: 0.95rem;
+    }
+}
+
+.outline-comparison {
+    margin: 20px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.comparison-table th {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #fff;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.comparison-table td {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: top;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+
+.comparison-table tr:hover td {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.comparison-table strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.comparison-table br {
+    margin: 8px 0;
+}
+
+.comparison-table .method-list {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.comparison-table .method-list li {
+    margin: 5px 0;
+    color: rgba(255, 255, 255, 0.8);
 }

@@ -13,6 +13,43 @@
             <p class="subtitle">AI为你推荐最热门的创作灵感</p>
         </header>
 
+        <!-- 第四个卡片：添加创作角度 -->
+        <div class="card add-card" data-card="4" id="addCard">
+            <div class="add-card-content" id="addCardContent">
+                <div class="add-icon">+</div>
+                <h2 class="add-title">添加你的创作角度</h2>
+                <button class="start-create-btn" id="startCreateBtn">开始创作</button>
+            </div>
+
+            <!-- 展开后的内容 -->
+            <div class="expanded-content" id="expandedContent" style="display: none;">
+                <div class="card-header">
+                    <input type="text" class="card-title-input" placeholder="输入你的创作主题..." id="titleInput">
+                </div>
+                <textarea class="card-description-input" placeholder="描述你的创作想法和角度..." id="descriptionInput"></textarea>
+                
+                <div class="rating-section">
+                    <h3 class="rating-title">角度评分</h3>
+                    <p class="rating-tip">直接在雷达图上拖拽调整各个维度的评分，数值越大表示该维度越强</p>
+                    <div class="radar-chart" id="radar4">
+                        <canvas id="canvas4" width="120" height="120"></canvas>
+                        <div class="radar-labels">
+                            <span class="label label-top">时效性 <span class="label-value" id="timelinessValue">3</span></span>
+                            <span class="label label-top-right">重要性 <span class="label-value" id="importanceValue">3</span></span>
+                            <span class="label label-bottom-right">显著性 <span class="label-value" id="significanceValue">3</span></span>
+                            <span class="label label-bottom">趣味性 <span class="label-value" id="interestValue">3</span></span>
+                            <span class="label label-bottom-left">贴近性 <span class="label-value" id="relevanceValue">3</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="save-btn" id="saveBtn" disabled>开始创作</button>
+                    <button class="cancel-btn" id="cancelBtn">取消</button>
+                </div>
+            </div>
+        </div>
+
         <main class="cards-grid">
             <!-- 第一个卡片：元宇宙办公新趋势 -->
             <div class="card" data-card="1">
@@ -113,43 +150,6 @@
                         <li>海上风电技术重要长期报告</li>
                         <li>绿色新政改革计划</li>
                     </ul>
-                </div>
-            </div>
-
-            <!-- 第四个卡片：添加创作角度 -->
-            <div class="card add-card" data-card="4" id="addCard">
-                <div class="add-card-content" id="addCardContent">
-                    <div class="add-icon">+</div>
-                    <h2 class="add-title">添加你的创作角度</h2>
-                    <button class="start-create-btn" id="startCreateBtn">开始创作</button>
-                </div>
-
-                <!-- 展开后的内容 -->
-                <div class="expanded-content" id="expandedContent" style="display: none;">
-                    <div class="card-header">
-                        <input type="text" class="card-title-input" placeholder="输入你的创作主题..." id="titleInput">
-                    </div>
-                    <textarea class="card-description-input" placeholder="描述你的创作想法和角度..." id="descriptionInput"></textarea>
-                    
-                    <div class="rating-section">
-                        <h3 class="rating-title">角度评分</h3>
-                        <p class="rating-tip">直接在雷达图上拖拽调整各个维度的评分，数值越大表示该维度越强</p>
-                        <div class="radar-chart" id="radar4">
-                            <canvas id="canvas4" width="120" height="120"></canvas>
-                            <div class="radar-labels">
-                                <span class="label label-top">时效性 <span class="label-value" id="timelinessValue">3</span></span>
-                                <span class="label label-top-right">重要性 <span class="label-value" id="importanceValue">3</span></span>
-                                <span class="label label-bottom-right">显著性 <span class="label-value" id="significanceValue">3</span></span>
-                                <span class="label label-bottom">趣味性 <span class="label-value" id="interestValue">3</span></span>
-                                <span class="label label-bottom-left">贴近性 <span class="label-value" id="relevanceValue">3</span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-actions">
-                        <button class="save-btn" id="saveBtn" disabled>开始创作</button>
-                        <button class="cancel-btn" id="cancelBtn">取消</button>
-                    </div>
                 </div>
             </div>
         </main>

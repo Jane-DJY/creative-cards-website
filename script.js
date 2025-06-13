@@ -406,3 +406,144 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// 处理大纲优化选项
+function handleOutlineOptimization() {
+    const optimizationOptions = [
+        {
+            id: 'A',
+            text: '结构还不够有节奏感，三部分像是"并列事件"，没有明显的情绪或逻辑推进'
+        },
+        {
+            id: 'B',
+            text: '问题设置不够锋利，没有提出能刺中时代或读者痛点的"尖锐问题"'
+        },
+        {
+            id: 'C',
+            text: '每部分缺少"关键细节"，像是没有人物、数据或具体事例来撑起观点'
+        },
+        {
+            id: 'D',
+            text: '概念和说法有点空，比如"情绪故事""估值逻辑"说了但没解释是什么'
+        },
+        {
+            id: 'E',
+            text: '没问题！我觉得这大纲已经很清晰，只是还没开始写细节而已'
+        },
+        {
+            id: 'F',
+            text: '不如自己填一下？'
+        }
+    ];
+
+    // 创建选项容器
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'optimization-options';
+    
+    // 创建标题
+    const title = document.createElement('h4');
+    title.textContent = '你觉得这个大纲最需要优化的地方是？可多选哦';
+    title.className = 'optimization-title';
+    optionsContainer.appendChild(title);
+
+    // 创建选项列表
+    const optionsList = document.createElement('div');
+    optionsList.className = 'options-list';
+
+    // 添加选项
+    optimizationOptions.forEach(option => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'optimization-option';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `option-${option.id}`;
+        checkbox.value = option.id;
+        
+        const label = document.createElement('label');
+        label.htmlFor = `option-${option.id}`;
+        label.textContent = option.text;
+        
+        optionDiv.appendChild(checkbox);
+        optionDiv.appendChild(label);
+        optionsList.appendChild(optionDiv);
+    });
+
+    optionsContainer.appendChild(optionsList);
+
+    // 添加自定义输入框（当选择F选项时显示）
+    const customInputContainer = document.createElement('div');
+    customInputContainer.className = 'custom-input-container';
+    customInputContainer.style.display = 'none';
+    
+    const customInput = document.createElement('input');
+    customInput.type = 'text';
+    customInput.className = 'custom-optimization-input';
+    customInput.placeholder = '请输入你的想法...';
+    
+    customInputContainer.appendChild(customInput);
+    optionsContainer.appendChild(customInputContainer);
+
+    // 添加确认按钮
+    const confirmButton = document.createElement('button');
+    confirmButton.className = 'confirm-optimization-btn';
+    confirmButton.textContent = '确认';
+    optionsContainer.appendChild(confirmButton);
+
+    // 添加到聊天区域
+    const chatMessages = document.querySelector('.chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-bubble bot-message';
+    messageDiv.appendChild(optionsContainer);
+    chatMessages.appendChild(messageDiv);
+
+    // 滚动到底部
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // 监听F选项的选中状态
+    const optionF = document.getElementById('option-F');
+    optionF.addEventListener('change', function() {
+        customInputContainer.style.display = this.checked ? 'block' : 'none';
+    });
+
+    // 监听确认按钮点击
+    confirmButton.addEventListener('click', function() {
+        const selectedOptions = Array.from(document.querySelectorAll('.optimization-option input:checked'))
+            .map(input => {
+                if (input.value === 'F') {
+                    return customInput.value.trim() || '用户未输入具体想法';
+                }
+                return input.nextElementSibling.textContent;
+            });
+
+        if (selectedOptions.length === 0) {
+            alert('请至少选择一个选项');
+            return;
+        }
+
+        // 创建用户回复消息
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'chat-bubble user-message';
+        const userMessageContent = document.createElement('p');
+        userMessageContent.textContent = selectedOptions.join('\n');
+        userMessageDiv.appendChild(userMessageContent);
+        chatMessages.appendChild(userMessageDiv);
+
+        // 移除选项容器
+        messageDiv.remove();
+
+        // 滚动到底部
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // 这里可以添加后续的处理逻辑
+        // 比如根据用户的选择生成相应的优化建议
+    });
+}
+
+// 监听"好的，我想打磨"按钮点击
+document.addEventListener('DOMContentLoaded', function() {
+    const polishButton = document.querySelector('.polish-button'); // 需要确保HTML中有这个按钮
+    if (polishButton) {
+        polishButton.addEventListener('click', handleOutlineOptimization);
+    }
+});
+

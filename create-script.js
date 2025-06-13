@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             inspirationTitleElement = document.createElement('h4');
             inspirationTitleElement.className = 'document-section-title';
             inspirationTitleElement.id = 'inspirationTitle';
-            inspirationTitleElement.textContent = '灵感';
+            inspirationTitleElement.textContent = '1. 灵感';
             documentContent.insertBefore(inspirationTitleElement, selectedOptionsDisplay); // 插入在 selectedOptionsDisplay 之前
         }
 
@@ -375,11 +375,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 重新构建 documentContent，包含所有部分
                 documentContent.innerHTML = `
                     <p class="document-angle">创作角度：<span id="userCreativeAngle">${localStorage.getItem('creativeAngle')}</span></p>
-                    <h4 class="document-section-title" id="inspirationTitle">灵感</h4>
+                    <h4 class="document-section-title" id="inspirationTitle">1. 灵感</h4>
                     <div id="selectedOptionsDisplay">${currentSelectedOptionsHTML}</div>
-                    <h4 class="document-section-title" id="outlineTitle">大纲</h4>
+                    <h4 class="document-section-title" id="outlineTitle">2. 大纲</h4>
                     <div id="outlineDisplay" class="outline-container">${outlinesHTML}</div>
                 `;
+
+                // Initialize Sortable.js for the chosen outline's content
+                const chosenOutlineList = document.querySelector('.chosen-outline-display .outline-list');
+                if (chosenOutlineList) {
+                    new Sortable(chosenOutlineList, {
+                        animation: 150,
+                        ghostClass: 'sortable-ghost',
+                        chosenClass: 'sortable-chosen',
+                        dragClass: 'sortable-drag',
+                    });
+                }
 
                 // 重新获取 outlineDisplay 元素，因为它已被重新创建
                 const newOutlineDisplay = document.getElementById('outlineDisplay');
@@ -393,9 +404,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         // 如果点击的是确认按钮，则阻止事件冒泡
                         if (e.target.classList.contains('outline-confirm-button')) {
                             e.stopPropagation();
-                            const index = e.target.dataset.outlineIndex;
-                            const selectedOutline = outlines[index];
-                            handleOutlineSelection(selectedOutline, index);
+                            // const index = e.target.dataset.outlineIndex;
+                            // const selectedOutline = outlines[index];
+                            // handleOutlineSelection(selectedOutline, index);
                         }
                     });
                 });
@@ -417,11 +428,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 重新构建 documentContent，在原有大纲下方追加选中的大纲
                     documentContent.innerHTML = `
                         <p class="document-angle">创作角度：<span id="userCreativeAngle">${localStorage.getItem('creativeAngle')}</span></p>
-                        <h4 class="document-section-title" id="inspirationTitle">灵感</h4>
+                        <h4 class="document-section-title" id="inspirationTitle">1. 灵感</h4>
                         <div id="selectedOptionsDisplay">${currentSelectedOptionsHTML}</div>
-                        <h4 class="document-section-title" id="outlineTitle">大纲</h4>
+                        <h4 class="document-section-title" id="outlineTitle">2. 大纲</h4>
                         <div id="outlineDisplay" class="outline-container">${currentOutlineDisplayHTML}</div>
-                        <h2 class="document-section-subtitle">被Hunk选中的大纲</h2>
+                        <h2 class="document-section-subtitle">2.1 被Hunk选中的大纲</h2>
                         <div class="chosen-outline-display">
                             <img src="${selectedOutline.image}" alt="${selectedOutline.title}" class="chosen-outline-image">
                             <h3 class="chosen-outline-title">${selectedOutline.title}</h3>
@@ -429,8 +440,45 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
 
+                    // 滚动到新添加的内容
+                    const chosenOutlineSection = document.querySelector('.chosen-outline-display');
+                    if (chosenOutlineSection) {
+                        chosenOutlineSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+
+                    // Initialize Sortable.js for the chosen outline's content
+                    const chosenOutlineList = document.querySelector('.chosen-outline-display .outline-list');
+                    if (chosenOutlineList) {
+                        new Sortable(chosenOutlineList, {
+                            animation: 150,
+                            ghostClass: 'sortable-ghost',
+                            chosenClass: 'sortable-chosen',
+                            dragClass: 'sortable-drag',
+                        });
+                    }
+
                     // 发送新的机器人消息
-                    addBotMessage(`好的，Hunk！我们已经为你采纳了方案"${selectedOutline.title}"。现在，我们进入创作的迭代环节。✨`);
+                    addBotMessage(`好的，Hunk！我们已经为你采纳了方案"${selectedOutline.title}"。现在，我们可以打磨一下大纲✨ `);
+
+                    const reviewButtonsHTML = `
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button id="refineOutlineButton" class="send-button" style="border-radius: 8px; width: auto; padding: 8px 15px; background: rgba(34, 197, 94, 0.8);">好的，我想打磨</button>
+                            <button id="continueButton" class="send-button" style="border-radius: 8px; width: auto; padding: 8px 15px; background: rgba(59, 130, 246, 0.8);">不用了，继续吧</button>
+                        </div>
+                    `;
+                    addBotMessage(reviewButtonsHTML);
+
+                    // 为新添加的按钮添加事件监听器
+                    document.getElementById('refineOutlineButton').addEventListener('click', () => {
+                        handleOutlineOptimization(); // 直接弹出多选优化选项
+                    });
+
+                    document.getElementById('continueButton').addEventListener('click', () => {
+                        // 更新进度条到迭代环节
+                        document.querySelector('.progress-step:nth-child(3)').classList.remove('active'); // 大纲
+                        document.querySelector('.progress-step:nth-child(5)').classList.add('active'); // 迭代
+                        addBotMessage('好的，我们现在进入创作的迭代环节。我将根据你选择的大纲，为你生成更多详细的内容。');
+                    });
 
                     // 显示用户输入框，用于后续对话 (如果之前隐藏了)
                     const userInputContainer = document.querySelector('.user-input-container');
@@ -442,15 +490,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         creativeControls.style.display = 'none';
                     }
 
-                    // 更新进度条到迭代环节
-                    document.querySelector('.progress-step:nth-child(3)').classList.remove('active'); // 大纲
-                    document.querySelector('.progress-step:nth-child(5)').classList.add('active'); // 迭代
-
-                    // 延迟显示引导消息
-                    const iterationMessages = [
-                        '我将根据你选择的大纲，为你生成更多详细的内容。'
-                    ];
-                    displayBotMessagesSequentially(iterationMessages);
+                    // 滚动到底部
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
             });
         }
@@ -630,4 +671,343 @@ function addBotMessage(message, isQuestionBlock = false, role = 'bot') {
     
     // 滚动到底部
     chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// 处理大纲优化选项
+function handleOutlineOptimization() {
+    const optimizationOptions = [
+        {
+            id: 'A',
+            text: '结构还不够有节奏感，三部分像是"并列事件"，没有明显的情绪或逻辑推进'
+        },
+        {
+            id: 'B',
+            text: '问题设置不够锋利，没有提出能刺中时代或读者痛点的"尖锐问题"'
+        },
+        {
+            id: 'C',
+            text: '每部分缺少"关键细节"，像是没有人物、数据或具体事例来撑起观点'
+        },
+        {
+            id: 'D',
+            text: '概念和说法有点空，比如"情绪故事""估值逻辑"说了但没解释是什么'
+        },
+        {
+            id: 'E',
+            text: '没问题！我觉得这大纲已经很清晰，只是还没开始写细节而已'
+        },
+        {
+            id: 'F',
+            text: '其他：'
+        }
+    ];
+
+    // 创建选项容器
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'optimization-options';
+    
+    // 创建标题
+    const title = document.createElement('h4');
+    title.textContent = '你觉得这个大纲最需要优化的地方是？可多选哦';
+    title.className = 'optimization-title';
+    optionsContainer.appendChild(title);
+
+    // 创建选项列表
+    const optionsList = document.createElement('div');
+    optionsList.className = 'options-list';
+
+    // 添加选项
+    optimizationOptions.forEach(option => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'optimization-option';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `option-${option.id}`;
+        checkbox.value = option.id;
+        
+        const label = document.createElement('label');
+        label.htmlFor = `option-${option.id}`;
+        label.textContent = option.text;
+        
+        optionDiv.appendChild(checkbox);
+        optionDiv.appendChild(label);
+
+        // 为选项F添加输入框
+        if (option.id === 'F') {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'other-input';
+            input.placeholder = '请填写你的想法...';
+            input.style.display = 'none';
+            optionDiv.appendChild(input);
+
+            // 监听复选框状态变化
+            checkbox.addEventListener('change', function() {
+                input.style.display = this.checked ? 'inline-block' : 'none';
+                if (this.checked) {
+                    input.focus();
+                }
+            });
+        }
+        
+        optionsList.appendChild(optionDiv);
+    });
+
+    optionsContainer.appendChild(optionsList);
+
+    // 添加确认按钮
+    const confirmButton = document.createElement('button');
+    confirmButton.className = 'confirm-optimization-btn';
+    confirmButton.textContent = '确认';
+    optionsContainer.appendChild(confirmButton);
+
+    // 添加到聊天区域
+    const chatMessages = document.querySelector('.chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-bubble bot-message';
+    messageDiv.appendChild(optionsContainer);
+    chatMessages.appendChild(messageDiv);
+
+    // 滚动到底部
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // 监听确认按钮点击
+    confirmButton.addEventListener('click', function() {
+        const selectedOptions = Array.from(document.querySelectorAll('.optimization-option input[type="checkbox"]:checked'))
+            .map(checkbox => {
+                if (checkbox.value === 'F') {
+                    const input = checkbox.parentElement.querySelector('.other-input');
+                    return input.value.trim() || '用户未输入具体想法';
+                }
+                return checkbox.nextElementSibling.textContent;
+            });
+
+        if (selectedOptions.length === 0) {
+            alert('请至少选择一个选项');
+            return;
+        }
+
+        // 创建用户回复消息
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'chat-bubble user-message';
+        const userMessageContent = document.createElement('p');
+        userMessageContent.textContent = selectedOptions.join('\n');
+        userMessageDiv.appendChild(userMessageContent);
+        chatMessages.appendChild(userMessageDiv);
+
+        // 移除选项容器
+        messageDiv.remove();
+
+        // 滚动到底部
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // 如果用户选择了B选项，显示后续问题
+        if (selectedOptions.some(option => option.includes('问题设置不够锋利'))) {
+            setTimeout(() => {
+                const followUpOptions = [
+                    {
+                        id: 'A',
+                        text: '太"安全"，像是在问一个所有人都已经知道的问题，没有颠覆性角度'
+                    },
+                    {
+                        id: 'B',
+                        text: '不够具体，像"情绪故事""估值模型"这些概念没贴合真实场景'
+                    },
+                    {
+                        id: 'C',
+                        text: '缺少矛盾或冲突感，像是泡泡玛特自己在反思，但没人在和它"对话"'
+                    },
+                    {
+                        id: 'D',
+                        text: '这些问题像是"总结陈词"，不是"追问"或"挑战"'
+                    },
+                    {
+                        id: 'E',
+                        text: '其他：'
+                    }
+                ];
+
+                // 创建新的选项容器
+                const followUpContainer = document.createElement('div');
+                followUpContainer.className = 'optimization-options';
+                
+                // 创建标题
+                const followUpTitle = document.createElement('h4');
+                followUpTitle.textContent = '好眼光！你选择了 B：问题设置不够锋利 ——这其实是最能提升一篇稿子深度和穿透力的关键。那你觉得这些"报道重点问题"为什么不够有力？';
+                followUpTitle.className = 'optimization-title';
+                followUpContainer.appendChild(followUpTitle);
+
+                // 创建选项列表
+                const followUpList = document.createElement('div');
+                followUpList.className = 'options-list';
+
+                // 添加选项
+                followUpOptions.forEach(option => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'optimization-option';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `followup-${option.id}`;
+                    checkbox.value = option.id;
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `followup-${option.id}`;
+                    label.textContent = option.text;
+                    
+                    optionDiv.appendChild(checkbox);
+                    optionDiv.appendChild(label);
+
+                    // 为选项E添加输入框
+                    if (option.id === 'E') {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'other-input';
+                        input.placeholder = '请填写你的想法...';
+                        input.style.display = 'none';
+                        optionDiv.appendChild(input);
+
+                        // 监听复选框状态变化
+                        checkbox.addEventListener('change', function() {
+                            input.style.display = this.checked ? 'inline-block' : 'none';
+                            if (this.checked) {
+                                input.focus();
+                            }
+                        });
+                    }
+                    
+                    followUpList.appendChild(optionDiv);
+                });
+
+                followUpContainer.appendChild(followUpList);
+
+                // 添加确认按钮
+                const followUpConfirmButton = document.createElement('button');
+                followUpConfirmButton.className = 'confirm-optimization-btn';
+                followUpConfirmButton.textContent = '确认';
+                followUpContainer.appendChild(followUpConfirmButton);
+
+                // 添加到聊天区域
+                const followUpMessageDiv = document.createElement('div');
+                followUpMessageDiv.className = 'chat-bubble bot-message';
+                followUpMessageDiv.appendChild(followUpContainer);
+                chatMessages.appendChild(followUpMessageDiv);
+
+                // 滚动到底部
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // 监听确认按钮点击
+                followUpConfirmButton.addEventListener('click', function() {
+                    const selectedFollowUpOptions = Array.from(document.querySelectorAll('.optimization-option input[type="checkbox"]:checked'))
+                        .map(checkbox => {
+                            if (checkbox.value === 'E') {
+                                const input = checkbox.parentElement.querySelector('.other-input');
+                                return input.value.trim() || '用户未输入具体想法';
+                            }
+                            return checkbox.nextElementSibling.textContent;
+                        });
+
+                    if (selectedFollowUpOptions.length === 0) {
+                        alert('请至少选择一个选项');
+                        return;
+                    }
+
+                    // 创建用户回复消息
+                    const followUpUserMessageDiv = document.createElement('div');
+                    followUpUserMessageDiv.className = 'chat-bubble user-message';
+                    const followUpUserMessageContent = document.createElement('p');
+                    followUpUserMessageContent.textContent = selectedFollowUpOptions.join('\n');
+                    followUpUserMessageDiv.appendChild(followUpUserMessageContent);
+                    chatMessages.appendChild(followUpUserMessageDiv);
+
+                    // 移除选项容器
+                    followUpMessageDiv.remove();
+
+                    // 滚动到底部
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    // 添加新的回复消息
+                    setTimeout(() => {
+                        addBotMessage('好的，我开始修改大纲，请稍等哦，你可以先去倒个咖啡。');
+                        
+                        // 在左侧文档区域添加修改后的大纲
+                        const documentContent = document.querySelector('.document-content');
+                        const modifiedOutlineHTML = `
+                            <h2 class="document-section-subtitle">2.2 大纲修改第一版</h2>
+                            <div class="outline-comparison">
+                                <table class="comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>🧱 原始大纲</th>
+                                            <th>✨ 修改后内容 + 方法说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <strong>第一部分：泡泡玛特从潮玩公司转型为"情绪捕手"</strong><br>
+                                                介绍中国年轻人精神孤岛背景与盲盒文化崛起<br>
+                                                🟡报道重点问题：孤独经济催生泡泡玛特式文化现象？
+                                            </td>
+                                            <td>
+                                                <strong>第一部分：情绪制造机的崛起——谁在消费孤独？</strong><br>
+                                                泡泡玛特如何成为"情绪捕手"？盲盒如何变为"微情绪的投射容器"？<br>
+                                                🔺<strong>问题升级</strong>：是谁在制造孤独，又是谁在贩卖安慰？<br>
+                                                🛠️方法：<br>
+                                                ‣ 问题反转 @苏格拉底型提问者<br>
+                                                ‣ 概念具象化（"盲盒=投射情绪"）<br>
+                                                ‣ 文化现象定位 @猎奇型旁观者
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>第二部分：情绪共鸣带来爆发式估值，但用户疲劳、审美重复、创作瓶颈陆续出现</strong><br>
+                                                资本与用户双向质疑开始<br>
+                                                🟡报道重点问题：还能讲出新的"情绪故事"吗？
+                                            </td>
+                                            <td>
+                                                <strong>第二部分：当情绪配方失灵——神话开始裂缝</strong><br>
+                                                叙事疲劳、角色审美同质、估值回撤，用户厌倦，资本失望<br>
+                                                🔺<strong>问题升级</strong>：情绪故事失灵后，泡泡玛特还有灵魂吗？它和一个塑料工厂的区别是什么？<br>
+                                                🛠️方法：<br>
+                                                ‣ 矛盾聚焦 @辩论型读者<br>
+                                                ‣ 舆论对话模拟（"社区吐槽 vs CEO发言"）<br>
+                                                ‣ 数据补刀（用户流失率、财报下滑）
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>第三部分：开始探索用户共创、IP人格AI化、国际化扩展、数字藏品路径</strong><br>
+                                                新估值逻辑出现<br>
+                                                🟡报道重点问题：泡泡玛特能否转型为东方迪士尼？估值模型是否合理？
+                                            </td>
+                                            <td>
+                                                <strong>第三部分：转型中的困兽与赌徒——谁能再造东方迪士尼？</strong><br>
+                                                尝试共创、AI人格、元宇宙、国际化，但陷入文化失语与模式焦虑<br>
+                                                🔺<strong>问题升级</strong>：这是通向迪士尼的路，还是走向技术伪装的空壳？<br>
+                                                🛠️方法：<br>
+                                                ‣ 前提质疑 @精算型分析师<br>
+                                                ‣ 国际扩张质疑 @文化冷感型旁观者<br>
+                                                ‣ 多路径镜像：共创 vs 控制、AI赋能 vs 空洞人格
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        
+                        // 将修改后的大纲添加到文档内容中
+                        documentContent.insertAdjacentHTML('beforeend', modifiedOutlineHTML);
+                        
+                        // 滚动到新添加的内容
+                        const modifiedOutlineSection = document.querySelector('.outline-comparison');
+                        if (modifiedOutlineSection) {
+                            modifiedOutlineSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 500);
+                });
+            }, 500);
+        }
+    });
 } 
